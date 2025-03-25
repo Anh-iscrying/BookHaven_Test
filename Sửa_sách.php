@@ -5,7 +5,15 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $book = null;
-$book_id = isset($_GET['book_id']) ? (int)$_GET['book_id'] : 0;
+$book_id = isset($_GET['book_id']) ? intval(trim($_GET['book_id'])) : 0;  // Ép kiểu và trim khoảng trắng
+
+// Kiểm tra kết nối cơ sở dữ liệu
+$mysqli = new mysqli("localhost", "root", "", "webbansach");
+if ($mysqli->connect_errno) {
+    echo "Failed to connect to MySQL: " . $mysqli->connect_error;
+    exit();
+}
+
 
 if ($book_id > 0) {
     $query = "SELECT * FROM tbl_book WHERE book_id = ?";
@@ -78,11 +86,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     unlink("images/" . $book['book_image']);
                 }
 
-                $query = "UPDATE tbl_book SET book_title = ?, book_describe = ?, book_author = ?, book_publisher = ?, book_size = ?, book_original_price = ?, book_discount = ?, book_quantity = ?, book_category = ?, book_image = ? WHERE book_id = ?";
+                // Cập nhật book_image riêng
+                $query = "UPDATE tbl_book SET book_image = ? WHERE book_id = ?";
                 $stmt = $mysqli->prepare($query);
+
                 if ($stmt) {
-                    $stmt->bind_param("sssssdiiiis", $title, $description, $author, $publisher, $size, $price, $discount, $quantity, $category, $image_name, $book_id); // Lưu tên file vào database
+                    $stmt->bind_param("si", $image_name, $book_id);
                     if ($stmt->execute()) {
+
+                         // Cập nhật các trường còn lại (tiêu đề, mô tả, v.v.)
+                        $query2 = "UPDATE tbl_book SET book_title = ?, book_describe = ?, book_author = ?, book_publisher = ?, book_size = ?, book_original_price = ?, book_discount = ?, book_quantity = ?, book_category = ? WHERE book_id = ?";
+                        $stmt2 = $mysqli->prepare($query2);
+                        if($stmt2){
+                            $stmt2->bind_param("sssssdiiii", $title, $description, $author, $publisher, $size, $price, $discount, $quantity, $category, $book_id);
+
+                            $stmt2->execute();
+                            $stmt2->close();
+                         }
+
                         $message = "Thông tin sách và ảnh đã được cập nhật thành công.";
                     } else {
                         $message = "Lỗi cập nhật database: " . $stmt->error;
@@ -92,8 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $message = "Lỗi prepare statement: " . $mysqli->error;
                 }
             } else {
-                $message = "Xin lỗi, đã có lỗi xảy ra khi upload file.";
-                $uploadOk = 0; // Important: Set $uploadOk to 0 if the file upload fails
+                $message = "Xin lỗi, đã có lỗi xảy ra khi upload file. Lỗi: " . $_FILES["image"]["error"];
+                $uploadOk = 0;
             }
         }
     } else {
@@ -103,7 +124,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt) {
             $stmt->bind_param("sssssdiiii", $title, $description, $author, $publisher, $size, $price, $discount, $quantity, $category, $book_id);
             if ($stmt->execute()) {
-                $message = "Thông tin sách đã được cập nhật thành công (không có ảnh mới).";
+
+                 // Cập nhật book_image riêng biệt
+                 $query2 = "UPDATE tbl_book SET book_image = ? WHERE book_id = ?";
+                 $stmt2 = $mysqli->prepare($query2);
+                 if($stmt2){
+                     $stmt2->bind_param("si", $image_name, $book_id);
+                     $stmt2->execute();
+                     $stmt2->close();
+                 }
+
+                $message = "Thông tin sách đã được cập nhật thành công (giữ lại ảnh cũ).";
             } else {
                 $message = "Lỗi cập nhật database: " . $stmt->error;
             }
@@ -227,12 +258,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script>
         document.getElementById('image-upload').addEventListener('change', function() {
             var file = this.files[0];
+            var oldImage = "<?php echo htmlspecialchars($book['book_image']); ?>"; // Lấy ảnh cũ
+
             if (file) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('preview-image').setAttribute('src', 'images/' + file.name);
                 }
                 reader.readAsDataURL(file);
+            }else{
+                 document.getElementById('preview-image').setAttribute('src', 'images/' + oldImage);
             }
         });
     </script>
