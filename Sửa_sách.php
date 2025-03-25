@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $book = null;
-$book_id = isset($_GET['book_id']) ? intval(trim($_GET['book_id'])) : 0;  // Ép kiểu và trim khoảng trắng
+$book_id = isset($_GET['book_id']) ? intval(trim($_GET['book_id'])) : 0;  
 
 // Kiểm tra kết nối cơ sở dữ liệu
 $mysqli = new mysqli("localhost", "root", "", "webbansach");
@@ -268,6 +268,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 reader.readAsDataURL(file);
             }else{
                  document.getElementById('preview-image').setAttribute('src', 'images/' + oldImage);
+            }
+        });
+
+        document.getElementById('image-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-image').setAttribute('src', e.target.result);
+                }
+                reader.readAsDataURL(file);
             }
         });
     </script>

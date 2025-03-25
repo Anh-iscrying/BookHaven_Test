@@ -42,6 +42,9 @@ if ($result->num_rows == 1) {
     <title>Trả lời yêu cầu</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="css/Trang_chu.css?v=<?php echo time(); ?>" type="text/css">
+    <link rel="stylesheet" href="css/header.css?v=<?php echo time(); ?>" type="text/css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -54,6 +57,7 @@ if ($result->num_rows == 1) {
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 100px;
         }
         h1 {
             color: #007bff;
@@ -67,6 +71,7 @@ if ($result->num_rows == 1) {
     </style>
 </head>
 <body>
+    <?php include 'header_admin.php'; ?>
     <div class="container">
         <h1>Trả lời yêu cầu hỗ trợ</h1>
 

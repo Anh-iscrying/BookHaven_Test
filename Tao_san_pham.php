@@ -73,13 +73,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Thêm Bootstrap CSS -->
     <link rel="stylesheet" href="css/Tao_san_pham.css?v=<?php echo time(); ?>" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="css/header.css?v=<?php echo time(); ?>" type="text/css">
     <title>Tạo sách mới</title>
+
 </head>
 <body>
-    <div class="header">
-        <a href="./Admin.php"><</a>
-    </div>
+    <?php include 'header_admin.php'; ?>
 
     <div class="body">
         <form class="container" id="story-form" action="Tao_san_pham.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
