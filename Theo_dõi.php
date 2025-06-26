@@ -16,7 +16,7 @@
 <body>
     <?php include 'header.php'; ?>
     <div class="container">
-        <h1>Theo dõi đơn hàng</h1>
+        <h1>Theo dõi đơn hàng</h1>p
 
         <div class="search-bar">
             <input type="text" id="order-search" placeholder="Nhập mã đơn hàng...">
